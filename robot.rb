@@ -57,7 +57,7 @@ class Robot < Exception
     @current_y_position = y
     @current_direction = direction
     @place_called = true
-    self.table.array[self.table.height - x - 1][y] = direction[0]
+    #self.table.array[self.table.height - x - 1][y] = direction[0]
   end
 
   def is_place?(command)
@@ -69,7 +69,7 @@ class Robot < Exception
   end
 
   def is_args_correct? (args_array)
-    args_array.size == 3 && is_numeric?(args_array[0]) && args_array[0].to_i < self.table.width.to_i && is_numeric?(args_array[1]) && args_array[1].to_i < self.table.height.to_i && self.direction_list.include?(args_array[2].to_s)
+    args_array.size == 3 && is_numeric?(args_array[0]) && args_array[0].to_i < self.table.width.to_i && args_array[0].to_i >= 0 && is_numeric?(args_array[1]) && args_array[1].to_i < self.table.height.to_i && args_array[1].to_i >= 0 && self.direction_list.include?(args_array[2].to_s)
   end
   def left
     i = 0
