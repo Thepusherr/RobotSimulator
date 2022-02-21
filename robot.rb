@@ -1,44 +1,40 @@
 require_relative "table"
-require_relative "exception"
 
-class Robot < Exception
-  attr_accessor :table, :height, :array, :direction_list
+class Robot
+  attr_accessor :table, :direction_list
 
   def initialize
     self.table = Table.new(5,6)
     self.direction_list = %w"NORTH EAST SOUTH WEST"
+    direction_list.index("NORTH")
   end
 
   def input
-    begin
-      command = gets.chomp
-      if is_place?(command)
-        args = command.split(" ")[1]
-        args_array = args.split(',')
-        if is_args_correct?(args_array)
-          place(args_array[0].to_i,args_array[1].to_i,args_array[2])
-        end
+    loop do
+    command = gets.chomp
+    if is_place?(command)
+      args = command.split(" ")[1]
+      args_array = args.split(',')
+      x = args_array[0].to_i
+      y = args_array[1].to_i
+      direction = args_array[2]
+      if is_args_correct?(x,y,direction)
+        place(x,y,direction)
       end
-      if !@place_called
-        raise EOFError, "AGAIN: PLACE NOT CALLED!"
-      else
-        if command == "MOVE"
-          move
-        end
-        if command == "LEFT"
-          left
-        end
-        if command == "RIGHT"
-          right
-        end
-        if command == "REPORT"
-          report
-        end
+    end
+    return if @place_called
+      if command == "MOVE"
+        move
       end
-
-      raise EOFError, "AGAIN: NOT ERROR, JUST LOOP!"
-    rescue Exception
-      retry
+      if command == "LEFT"
+        left
+      end
+      if command == "RIGHT"
+        right
+      end
+      if command == "REPORT"
+        report
+      end
     end
   end
 
@@ -51,6 +47,10 @@ class Robot < Exception
   @current_y_position = 0
   @place_called = false
 
+  def is_place?(command)
+    command.split(" ")[1] && command[0...6] == "PLACE "
+  end
+
   def place(x,y,direction)
     return unless x < self.table.width && y < self.table.height
     @current_x_position = x
@@ -60,18 +60,14 @@ class Robot < Exception
     #self.table.array[self.table.height - x - 1][y] = direction[0]
   end
 
-  def is_place?(command)
-    command.split(" ")[1] && command[0...6] == "PLACE "
+  def is_args_correct? (x,y,direction)
+    x < self.table.width.to_i && x >= 0 && y < self.table.height.to_i && y >= 0 &&
+      self.direction_list.include?(direction)
   end
 
-  def is_numeric?(obj)
-    obj.to_s.match(/\A[+-]?\d+?(\.\d+)?\Z/) == nil ? false : true
-  end
-
-  def is_args_correct? (args_array)
-    args_array.size == 3 && is_numeric?(args_array[0]) && args_array[0].to_i < self.table.width.to_i && args_array[0].to_i >= 0 && is_numeric?(args_array[1]) && args_array[1].to_i < self.table.height.to_i && args_array[1].to_i >= 0 && self.direction_list.include?(args_array[2].to_s)
-  end
   def left
+    @current_direction = self.direction_list[self.direction_list.index(@current_direction)+1]
+
     i = 0
     while i < self.direction_list.length()
       if @current_direction == self.direction_list[i]
