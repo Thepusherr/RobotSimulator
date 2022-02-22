@@ -9,5 +9,4 @@ class RobotExecutor
     @robot.input
   end
 end
-
 RobotExecutor.new
